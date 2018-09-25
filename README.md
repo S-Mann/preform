@@ -3,7 +3,7 @@ The auto resource/endpoint maker for your REST needs.
 
 Want to migrate to a framework but have tonnes of tables and you can't deal with the resource migration from one framework to another or setup a new back-end using a new framework altogether? Well this script will ease your process if not automate it completely.
 
-### Steps-
+### Steps:
 
 1. Fill in the configurations in the settings.properties file.
 2. Run the script.(Do not tamper any other file(s) in config folder other than settings.properties unless you know what you are doing)
