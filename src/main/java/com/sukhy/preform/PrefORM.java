@@ -5,17 +5,15 @@
  */
 package com.sukhy.preform;
 
-import java.util.List;
-
 /**
  *
- * @author sukhi
+ * @author Sukhy <https://github.com/S-Mann>
  */
 public class PrefORM {
 
     public static void main(String[] args) throws Exception {
-        try(Resource resource = new Resource()) {
-            List columnDataTypes = resource.getColumnDataTypes();
+        try (Resource resource = new Resource()) {
+            resource.createResource();
         } catch (Exception e) {
             e.printStackTrace();
         }

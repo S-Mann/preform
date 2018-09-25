@@ -5,6 +5,13 @@
  */
 package com.sukhy.preform;
 
+import static com.sukhy.preform.Constants.DB_NAME;
+import static com.sukhy.preform.Constants.DB_URL;
+import static com.sukhy.preform.Constants.DRIVER;
+import static com.sukhy.preform.Constants.PASSWORD;
+import static com.sukhy.preform.Constants.SCHEMA;
+import static com.sukhy.preform.Constants.TABLE_NAME;
+import static com.sukhy.preform.Constants.USER;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -20,19 +27,13 @@ import java.util.Properties;
 
 /**
  *
- * @author sukhi
+ * @author Sukhy <https://github.com/S-Mann>
  */
 public class Resource implements AutoCloseable {
 
-    private final String DB_URL = "dbUrl";
-    private final String DB_NAME = "dbName";
-    private final String SCHEMA = "schema";
-    private final String TABLE_NAME = "tableName";
-    private final String USER = "user";
-    private final String DRIVER = "driver";
-    private final String PASSWORD = "password";
     private Connection connection;
     private Properties properties;
+    private String columns,values,condition;
 
     public Resource() throws Exception {
         InputStream inputStream = new FileInputStream(new File(".\\src\\main\\resources\\config\\settings.properties"));
@@ -47,7 +48,7 @@ public class Resource implements AutoCloseable {
         }
     }
 
-    public List getColumnDataTypes() throws Exception {
+    public List<HashMap> getColumnDetails() throws Exception {
         PreparedStatement prepareStatement = connection.prepareStatement("select column_name,column_default,udt_name "
                 + "from information_schema.columns "
                 + "where table_name= ? and table_schema= ?");
@@ -65,6 +66,29 @@ public class Resource implements AutoCloseable {
             list.add(row);
         }
         return list;
+    }
+
+    public boolean createResource() throws Exception {
+        try {
+            List<HashMap> hashMaps = getColumnDetails();
+            StringBuilder columns = new StringBuilder();
+            StringBuilder values = new StringBuilder();
+            StringBuilder condition = new StringBuilder();
+            for (HashMap hashMap : hashMaps) {
+                columns.append(hashMap.get(Constants.PG_COLUMN_NAME) + " ");
+                values.append("$" + hashMap.get(Constants.PG_COLUMN_NAME) + "::" + hashMap.get(Constants.PG_DATA_TYPE) + " ");
+                if (hashMap.get(Constants.PG_COLUMN_NAME).equals(Constants.TABLE_ID)) {
+                    condition.append(hashMap.get(Constants.PG_COLUMN_NAME) + "=$" + hashMap.get(Constants.PG_COLUMN_NAME) + "::"
+                            + hashMap.get(Constants.PG_DATA_TYPE) + " ");
+                }
+            }
+            this.columns = columns.toString().trim().replaceAll(" ", ",");
+            this.values = columns.toString().trim().replaceAll(" ", ",");
+            this.condition = condition.toString().trim();
+            return new Query().queryBuilder(this.values, this.columns, properties.getProperty(Constants.TABLE_NAME), this.condition);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><Resource xmlns="http://xml.metamug.net/resource/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" v="1.0" xsi:schemaLocation="http://xml.metamug.net/resource/1.0 http://xml.metamug.net/schema/resource.xsd">
+    <Request item="true" method="POST"> 
+        <Query>
+            INSERT INTO %table%(%columns%)% VALUES (%values%) RETURNING id
+        </Query> 
+    </Request>
+    <Request item="false" method="GET">
+        <Query>
+            SELECT %columns% FROM %table%
+        </Query>
+    </Request>
+    <Request item="true" method="GET">
+        <Query>
+            SELECT %columns% FROM %table% WHERE %condition%
+        </Query>
+    </Request>
+    <Request item="true" method="PUT">
+        <Query>
+            UPDATE %table% SET (%columns%)=(%values%) WHERE %condition% RETURNING id
+        </Query>
+    </Request>
+    <Request item="true" method="DELETE">
+        <Query>
+            DELETE FROM %table% WHERE %condition% RETURNING id
+        </Query>
+    </Request>
+</Resource>
